@@ -65,17 +65,16 @@ def main():
     # charliecloud doesn't read ENV from r2d
     # so we explicitly save it and load it back
     r2d.appendix = r"""
-    RUN env > /tmp/env
     USER root
     # Prefixing with 000- means bash -l will source it first
-    RUN mv /tmp/env /etc/profile.d/000-repo2docker-env.sh
+    RUN ln -s /environment /etc/profile.d/000-repo2docker-env.sh
     USER ${NB_USER}
     """
 
     r2d.initialize()
     r2d.build()
     
-    r2d.log.info('Exporting built image to tar')
+    r2d.log.info('Exporting built image to tar\n')
     subprocess.check_call([
         'ch-docker2tar',
         r2d.output_image_spec,
