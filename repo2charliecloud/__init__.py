@@ -62,6 +62,15 @@ def main():
     r2d.repo = args.repo
     r2d.ref = resolved_ref
     r2d.output_image_spec = readable_image_name(args.repo, resolved_ref)
+    # charliecloud doesn't read ENV from r2d
+    # so we explicitly save it and load it back
+    r2d.appendix = r"""
+    RUN env > /tmp/env
+    USER root
+    # Prefixing with 000- means bash -l will source it first
+    RUN mv /tmp/env /etc/profile.d/000-repo2docker-env.sh
+    USER ${NB_USER}
+    """
 
     r2d.initialize()
     r2d.build()
